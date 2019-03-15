@@ -1,0 +1,16 @@
+{
+  "name": "vostok-airdrop-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@waves/signature-generator": "^5.1.1-alpha.1",
+    "axios": "^0.18.0",
+    "telegraf": "^3.27.1"
+  }
+}
