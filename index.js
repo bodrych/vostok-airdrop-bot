@@ -15,7 +15,12 @@ const main = async () => {
 
 	bot.on('text', async (ctx) => {
 		const text = ctx.message.text
-		const valid = await utils.crypto.isValidAddress(text)
+		let valid = false
+		try {
+			valid = await utils.crypto.isValidAddress(text)
+		} catch (error) {
+			console.log(error)
+		}
 		if (valid) {
 			bot.telegram.sendChatAction(ctx.from.id, 'typing')
 			try {
