@@ -63,7 +63,6 @@ const main = async () => {
 
 	bot.start(ctx => {
 		ctx.reply('Send me your address')
-		getInfo()
 	})
 
 	bot.on('text', async (ctx) => {
