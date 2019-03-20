@@ -1,28 +1,16 @@
 const Telegraf = require('telegraf')
+const Extra = require('telegraf/extra')
+const Markup = require('telegraf/markup')
 const axios = require('axios')
 const utils = require('@waves/signature-generator').utils
 
 const bot = new Telegraf(process.env.TOKEN)
 
-const main = async () => {
-
-	bot.startWebhook('/', null, process.env.PORT)
-
-	bot.start(ctx => {
-		ctx.reply('Send me Your address')
-		getInfo()
-	})
-
-	bot.on('text', async (ctx) => {
-		const text = ctx.message.text
-		let valid = false
-		try {
-			valid = await utils.crypto.isValidAddress(text)
-		} catch (error) {
-			console.log(error)
-		}
+const replyWithStat = async (ctx, text, old) => {
+	let valid = false
+	try {
+		valid = await utils.crypto.isValidAddress(text)
 		if (valid) {
-			bot.telegram.sendChatAction(ctx.from.id, 'typing')
 			try {
 				const response = await getInfo(text)
 				if (response) {
@@ -38,10 +26,21 @@ Last WCT balance: ${data.last_wctbalace}
 
 Vostok tokens to be distributed: ${data.sumTokens}
 Last snapshot: ${response.last_snap} UTC
-Vostok tokens per token: ${data.perToken}
-
-These figures are estimates and are provided for information only. The exact figures may change due to various factors.</code>`
-					ctx.replyWithHTML(stat)
+Vostok tokens per token: ${data.perToken}</code>`
+					if (old) {
+						ctx.editMessageText(stat, Extra.HTML().markup((m) =>
+							m.inlineKeyboard([
+								m.callbackButton('Update', data.address)
+								]
+								)))
+						ctx.answerCbQuery(null, true)
+					} else {
+						ctx.reply(stat, Extra.HTML().markup((m) =>
+							m.inlineKeyboard([
+								m.callbackButton('Update', data.address)
+								]
+								)))
+					}
 				} else {
 					ctx.reply('Ooops')
 				}
@@ -51,6 +50,28 @@ These figures are estimates and are provided for information only. The exact fig
 		} else {
 			ctx.reply('Is it address?')
 		}
+	} catch (error) {
+		console.log(error)
+	}
+}
+
+
+
+const main = async () => {
+
+	bot.startWebhook('/', null, process.env.PORT)
+
+	bot.start(ctx => {
+		ctx.reply('Send me your address')
+		getInfo()
+	})
+
+	bot.on('text', async (ctx) => {
+		replyWithStat(ctx, ctx.message.text, false)
+	})
+
+	bot.action(/^3P.{33}$/, async (ctx) => {
+		replyWithStat(ctx, ctx.callbackQuery.data, true)
 	})
 }
 
