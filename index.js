@@ -6,7 +6,7 @@ const utils = require('@waves/signature-generator').utils
 
 const bot = new Telegraf(process.env.TOKEN)
 
-const replyWithStat = async (ctx, text, old) => {
+const replyWithStat = async (ctx, text) => {
 	let valid = false
 	try {
 		valid = await utils.crypto.isValidAddress(text)
@@ -27,20 +27,13 @@ Last WCT balance: ${data.last_wctbalace}
 Vostok tokens to be distributed: ${data.sumTokens}
 Last snapshot: ${response.last_snap} UTC
 Vostok tokens per token: ${data.perToken}</code>`
-					if (old) {
-						ctx.editMessageText(stat, Extra.HTML().markup((m) =>
-							m.inlineKeyboard([
-								m.callbackButton('Update', data.address)
-								]
-								)))
-						ctx.answerCbQuery(null, true)
-					} else {
-						ctx.reply(stat, Extra.HTML().markup((m) =>
-							m.inlineKeyboard([
-								m.callbackButton('Update', data.address)
-								]
-								)))
-					}
+					ctx.reply()
+					ctx.editMessageText(stat, Extra.HTML().markup((m) =>
+						m.inlineKeyboard([
+							m.callbackButton('Update', data.address)
+							]
+							)))
+					ctx.answerCbQuery(null, true)
 				} else {
 					ctx.reply('Ooops')
 				}
@@ -66,11 +59,11 @@ const main = async () => {
 	})
 
 	bot.on('text', async (ctx) => {
-		replyWithStat(ctx, ctx.message.text, false)
+		replyWithStat(ctx, ctx.message.text)
 	})
 
 	bot.action(/^3P.{33}$/, async (ctx) => {
-		replyWithStat(ctx, ctx.callbackQuery.data, true)
+		replyWithStat(ctx, ctx.callbackQuery.data)
 	})
 }
 
