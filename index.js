@@ -35,7 +35,6 @@ Vostok tokens per token: ${data.perToken}</code>`
 						m.callbackButton('Update', data.address)
 						]
 						)))
-				}
 			} else {
 				ctx.reply('Ooops')
 			}
