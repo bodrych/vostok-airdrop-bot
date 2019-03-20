@@ -66,7 +66,7 @@ const main = async () => {
 	})
 
 	bot.on('text', async (ctx) => {
-		return eplyWithStat(ctx, ctx.message.text, false)
+		return replyWithStat(ctx, ctx.message.text, false)
 	})
 
 	bot.action(/^3P.{33}$/, async (ctx) => {
