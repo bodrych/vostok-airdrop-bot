@@ -10,12 +10,15 @@ const replyWithStat = async (ctx, text, old) => {
 	let valid = false
 	try {
 		valid = await utils.crypto.isValidAddress(text)
-		if (valid) {
-			try {
-				const response = await getInfo(text)
-				if (response) {
-					const data = response.data
-					const stat = 
+	} catch (error) {
+		console.log(error)
+	}
+	if (valid) {
+		try {
+			const response = await getInfo(text)
+			if (response) {
+				const data = response.data
+				const stat = 
 `<code>Address: ${data.address}
 
 AVG Waves balance: ${data.avg_wbalance}
@@ -27,31 +30,28 @@ Last WCT balance: ${data.last_wctbalace}
 Vostok tokens to be distributed: ${data.sumTokens}
 Last snapshot: ${response.last_snap} UTC
 Vostok tokens per token: ${data.perToken}</code>`
-					if (old) {
-						ctx.answerCbQuery(null, true)
-						return ctx.editMessageText(stat, Extra.HTML().markup((m) =>
-							m.inlineKeyboard([
-								m.callbackButton('Update', data.address)
-								]
-								)))
-					} else {
-						return ctx.reply(stat, Extra.HTML().markup((m) =>
-							m.inlineKeyboard([
-								m.callbackButton('Update', data.address)
-								]
-								)))
-					}
+				if (old) {
+					ctx.answerCbQuery(null, true)
+					return ctx.editMessageText(stat, Extra.HTML().markup((m) =>
+						m.inlineKeyboard([
+							m.callbackButton('Update', data.address)
+							]
+							)))
 				} else {
-					ctx.reply('Ooops')
+					return ctx.reply(stat, Extra.HTML().markup((m) =>
+						m.inlineKeyboard([
+							m.callbackButton('Update', data.address)
+							]
+							)))
 				}
-			} catch (error) {
-				console.log(error)
+			} else {
+				ctx.reply('Ooops')
 			}
-		} else {
-			ctx.reply('Is it address?')
+		} catch (error) {
+			console.log(error)
 		}
-	} catch (error) {
-		console.log(error)
+	} else {
+		ctx.reply('Is it address?')
 	}
 }
 
