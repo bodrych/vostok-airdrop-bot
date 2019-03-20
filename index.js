@@ -27,16 +27,15 @@ Last WCT balance: ${data.last_wctbalace}
 Vostok tokens to be distributed: ${data.sumTokens}
 Last snapshot: ${response.last_snap} UTC
 Vostok tokens per token: ${data.perToken}</code>`
-					ctx.reply()
 					if (old) {
-						ctx.editMessageText(stat, Extra.HTML().markup((m) =>
+						ctx.answerCbQuery(null, true)
+						return ctx.editMessageText(stat, Extra.HTML().markup((m) =>
 							m.inlineKeyboard([
 								m.callbackButton('Update', data.address)
 								]
 								)))
-						ctx.answerCbQuery(null, true)
 					} else {
-						ctx.reply(stat, Extra.HTML().markup((m) =>
+						return ctx.reply(stat, Extra.HTML().markup((m) =>
 							m.inlineKeyboard([
 								m.callbackButton('Update', data.address)
 								]
@@ -67,11 +66,11 @@ const main = async () => {
 	})
 
 	bot.on('text', async (ctx) => {
-		replyWithStat(ctx, ctx.message.text, false)
+		return eplyWithStat(ctx, ctx.message.text, false)
 	})
 
 	bot.action(/^3P.{33}$/, async (ctx) => {
-		replyWithStat(ctx, ctx.callbackQuery.data, true)
+		return replyWithStat(ctx, ctx.callbackQuery.data, true)
 	})
 }
 
