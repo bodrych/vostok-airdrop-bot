@@ -18,18 +18,33 @@ const replyWithStat = async (ctx, text) => {
 			const response = await getInfo(text)
 			if (response) {
 				const data = response.data
-				const stat = 
-`<code>Address: ${data.address}
+				let stat2 = 
+					`<code>AVG Waves balance: ${data.avg_wbalance2}\n` +
+					`AVG WCT balance: ${data.avg_wctbalance2}\n` +
+					`Last Waves balance: ${data.last_wbalance2}\n` +
+					`Last WCT balance: ${data.last_wctbalace2}\n` +
+					`Vostok tokens to be distributed: ${data.sumTokens2}\n` +
+					`Last snapshot: ${response.last_snap2} UTC\n` +
+					`Vostok tokens per token: ${data.perToken2}</code>`
+				if (data.verified == 0) {
+					stat2 += '\n\nYour address is not verified. To get your tokens you need to <a href="https://vostok.wavesplatform.com">auth</a> with Waves Keeper or send transaction with 0.0001 WAVES to address <a href="https://client.wavesplatform.com/#send/WAVES?recipient=3PBNiHBcp8rxiYkGVGNHEGZHEamb1aXeWVv&amount=0.0001&strict=true">3PBNiHBcp8rxiYkGVGNHEGZHEamb1aXeWVv</a>'
+				}
+				let stat1 = 
+					`<code>AVG Waves balance: ${data.avg_wbalance}\n` +
+					`AVG WCT balance: ${data.avg_wctbalance}\n` +
+					`Last Waves balance: ${data.last_wbalance}\n` +
+					`Last WCT balance: ${data.last_wctbalace}\n` +
+					`Vostok tokens to be distributed: ${data.sumTokens}\n` +
+					`Last snapshot: ${response.last_snap} UTC\n` +
+					`Vostok tokens per token: ${data.perToken}</code>`
 
-AVG Waves balance: ${data.avg_wbalance}
-AVG WCT balance: ${data.avg_wctbalance}
+				let stat =
+					`<b>Address: ${data.address}</b>\n\n` +
+					`<b>Second stage</b>\n` +
+					stat2 +
+					`\n\n<b>First stage</b>\n` +
+					stat1
 
-Last Waves balance: ${data.last_wbalance}
-Last WCT balance: ${data.last_wctbalace}
-
-Vostok tokens to be distributed: ${data.sumTokens}
-Last snapshot: ${response.last_snap} UTC
-Vostok tokens per token: ${data.perToken}</code>`
 				return ctx.reply(stat, Extra.HTML().markup((m) =>
 					m.inlineKeyboard([
 						m.callbackButton('Update', data.address)
@@ -69,8 +84,12 @@ const main = async () => {
 const getInfo = async (address) => {
 	const url = 'http://vostok.wavesplatform.com/search.php'
 	const data = `address=${address}`
+	const headers = {
+		'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+		'X-Requested-With': 'XMLHttpRequest'
+	}
 	try {
-		const response = await axios.post(url, data)
+		const response = await axios.post(url, data, { headers })
 		return response.data
 	} catch (error) {
 		console.log(error)
